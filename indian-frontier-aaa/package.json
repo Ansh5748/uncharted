@@ -1,0 +1,41 @@
+{
+  "name": "indian-frontier-aaa",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Ultra-realistic Indian-themed open world adventure game inspired by Uncharted",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
+    "@types/node": "^20.10.0",
+    "eslint": "^8.55.0"
+  },
+  "dependencies": {
+    "@babylonjs/core": "^8.24.0",
+    "@babylonjs/materials": "^8.24.0",
+    "@babylonjs/loaders": "^8.24.0",
+    "@babylonjs/gui": "^8.24.0",
+    "@babylonjs/serializers": "^8.24.0",
+    "@babylonjs/inspector": "^8.24.0",
+    "@babylonjs/addons": "^8.24.0",
+    "howler": "^2.2.4",
+    "gsap": "^3.12.2"
+  },
+  "keywords": [
+    "game",
+    "3d",
+    "babylonjs",
+    "indian",
+    "adventure",
+    "open-world",
+    "realistic"
+  ],
+  "author": "Indian Frontier Team",
+  "license": "MIT"
+}

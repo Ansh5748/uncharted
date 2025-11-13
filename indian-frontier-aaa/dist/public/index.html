@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏛️ Uncharted: The Lost Legacy - Indian Frontier</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            overflow: hidden;
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #game-canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            cursor: none;
+        }
+
+        /* Ultra-realistic loading screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(26, 26, 46, 0.95), 
+                rgba(22, 33, 62, 0.95), 
+                rgba(15, 52, 96, 0.95));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+        }
+
+        .loading-content {
+            text-align: center;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        .game-title {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { filter: brightness(1) drop-shadow(0 0 20px rgba(255, 215, 0, 0.3)); }
+            100% { filter: brightness(1.2) drop-shadow(0 0 40px rgba(255, 215, 0, 0.6)); }
+        }
+
+        .game-subtitle {
+            font-size: 1.5rem;
+            color: #ffd700;
+            margin-bottom: 40px;
+            font-style: italic;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .loading-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .loading-bar {
+            height: 100%;
+            background: linear-gradient(90deg, 
+                #ffd700, 
+                #ffed4e, 
+                #ffd700, 
+                #ffed4e, 
+                #ffd700);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: loadingPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .loading-progress {
+            font-size: 1.2rem;
+            color: #ffd700;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .loading-text {
+            font-size: 1rem;
+            color: #ccc;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .loading-tips {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-tips h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .loading-tips ul {
+            list-style: none;
+            text-align: left;
+        }
+
+        .loading-tips li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .loading-tips li:before {
+            content: "✨";
+            position: absolute;
+            left: 0;
+            color: #ffd700;
+        }
+
+        /* Ultra-realistic game instructions */
+        #game-instructions {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(26, 26, 46, 0.95), 
+                rgba(22, 33, 62, 0.95), 
+                rgba(15, 52, 96, 0.95));
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            backdrop-filter: blur(20px);
+        }
+
+        .instructions-content {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            max-width: 800px;
+            text-align: center;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .instructions-title {
+            font-size: 2.5rem;
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .instructions-subtitle {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .character-info {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .character-name {
+            font-size: 1.5rem;
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .character-desc {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .control-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .control-item:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: rgba(255, 215, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .key {
+            background: linear-gradient(135deg, #333, #555);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            color: #ffd700;
+            border: 1px solid #666;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+            display: inline-block;
+            margin-right: 10px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .start-button {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a1a2e;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 215, 0, 0.5);
+            background: linear-gradient(135deg, #ffed4e, #ffd700);
+        }
+
+        .start-button:active {
+            transform: translateY(-1px);
+        }
+
+        .features-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            text-align: left;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .feature-title {
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .feature-desc {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        /* Error message styling */
+        .error-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            font-family: 'Arial', sans-serif;
+            z-index: 1000;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 2.5rem;
+            }
+            
+            .instructions-content {
+                margin: 20px;
+                padding: 20px;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Performance optimization */
+        .performance-warning {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 193, 7, 0.9);
+            color: #1a1a2e;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            max-width: 300px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            display: none;
+        }
+    </style>
+  <script type="module" crossorigin src="/assets/index-mAit6G3x.js"></script>
+</head>
+<body>
+    <!-- Ultra-realistic loading screen -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <h1 class="game-title">🏛️ Uncharted: The Lost Legacy</h1>
+            <p class="game-subtitle">Indian Frontier - Chloe Frazer's Adventure</p>
+            
+            <div class="loading-bar-container">
+                <div class="loading-bar" id="loading-progress-bar"></div>
+            </div>
+            
+            <div class="loading-progress" id="loading-progress-text">Loading... 0%</div>
+            <div class="loading-text" id="loading-status">Initializing Chloe Frazer's adventure...</div>
+            
+            <div class="loading-tips">
+                <h3>🎮 Pro Tips for Ultimate Experience</h3>
+                <ul>
+                    <li>Use a high-performance GPU for ultra graphics</li>
+                    <li>Enable hardware acceleration in your browser</li>
+                    <li>Close other applications for maximum performance</li>
+                    <li>Use headphones for immersive 3D audio</li>
+                    <li>Press 'G' to toggle graphics quality in-game</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ultra-realistic game instructions -->
+    <div id="game-instructions">
+        <div class="instructions-content">
+            <h2 class="instructions-title">🏛️ Welcome to Uncharted: The Lost Legacy</h2>
+            <p class="instructions-subtitle">Join Chloe Frazer in her quest to find the Tusk of Ganesh</p>
+            
+            <div class="character-info">
+                <div class="character-name">Chloe Frazer</div>
+                <div class="character-desc">
+                    Australian-Indian treasure hunter and protagonist of Uncharted: The Lost Legacy. 
+                    Chloe is searching for the ancient Tusk of Ganesh in the Western Ghats of India. 
+                    Her journey takes her through ancient Hoysala temples and treacherous terrain.
+                </div>
+            </div>
+            
+            <div class="features-list">
+                <div class="feature-item">
+                    <span class="feature-icon">🎨</span>
+                    <div class="feature-title">Ultra-Realistic Graphics</div>
+                    <div class="feature-desc">PBR materials, advanced lighting, and cinematic effects</div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🌍</span>
+                    <div class="feature-title">Western Ghats Environment</div>
+                    <div class="feature-desc">Ancient temples, dense forests, and sacred sites</div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🎵</span>
+                    <div class="feature-title">3D Spatial Audio</div>
+                    <div class="feature-desc">Realistic sound with distance and direction</div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">⚡</span>
+                    <div class="feature-title">Advanced Physics</div>
+                    <div class="feature-desc">Realistic movement, interactions, and effects</div>
+                </div>
+            </div>
+            
+            <div class="controls-grid">
+                <div class="control-item">
+                    <span class="key">WASD</span> Movement
+                </div>
+                <div class="control-item">
+                    <span class="key">Mouse</span> Camera Control
+                </div>
+                <div class="control-item">
+                    <span class="key">Space</span> Jump
+                </div>
+                <div class="control-item">
+                    <span class="key">Shift</span> Run
+                </div>
+                <div class="control-item">
+                    <span class="key">Ctrl/C</span> Crouch
+                </div>
+                <div class="control-item">
+                    <span class="key">E</span> Interact
+                </div>
+                <div class="control-item">
+                    <span class="key">G</span> Graphics Quality
+                </div>
+                <div class="control-item">
+                    <span class="key">ESC</span> Pause
+                </div>
+            </div>
+            
+            <button class="start-button" onclick="startGame()">🚀 Begin Chloe's Adventure</button>
+        </div>
+    </div>
+
+    <!-- Performance warning -->
+    <div class="performance-warning" id="performance-warning">
+        <strong>Performance Tip:</strong> For the best experience, ensure your browser supports WebGL 2.0 and has hardware acceleration enabled.
+    </div>
+
+    <!-- Game canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <script>
+        // Ultra-realistic loading simulation
+        let loadingProgress = 0;
+        const loadingSteps = [
+            "Initializing Chloe Frazer's adventure engine...",
+            "Loading ultra-realistic character model...",
+            "Generating Western Ghats environment...",
+            "Creating ancient Hoysala temple...",
+            "Setting up story elements and dialogue...",
+            "Optimizing performance settings...",
+            "Preparing for treasure hunting adventure...",
+            "Ready for Chloe's quest!"
+        ];
+
+        const loadingBar = document.getElementById('loading-progress-bar');
+        const loadingText = document.getElementById('loading-progress-text');
+        const loadingStatus = document.getElementById('loading-status');
+        const loadingScreen = document.getElementById('loading-screen');
+        const gameInstructions = document.getElementById('game-instructions');
+
+        function updateLoadingProgress(progress, status) {
+            loadingProgress = progress;
+            loadingBar.style.width = progress + '%';
+            loadingText.textContent = `Loading... ${progress}%`;
+            if (status) {
+                loadingStatus.textContent = status;
+            }
+        }
+
+        function simulateLoading() {
+            let step = 0;
+            const interval = setInterval(() => {
+                const progress = (step / (loadingSteps.length - 1)) * 100;
+                updateLoadingProgress(Math.round(progress), loadingSteps[step]);
+                
+                step++;
+                if (step >= loadingSteps.length) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        gameInstructions.style.display = 'flex';
+                    }, 500);
+                }
+            }, 800);
+        }
+
+        function startGame() {
+            // Hide instructions
+            gameInstructions.style.display = 'none';
+            
+            // Check for WebGL support
+            const canvas = document.getElementById('game-canvas');
+            const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+            
+            if (!gl) {
+                showError('WebGL is not supported in your browser. Please update your browser or enable hardware acceleration.');
+                return;
+            }
+
+            // Check for performance
+            const performanceWarning = document.getElementById('performance-warning');
+            if (navigator.hardwareConcurrency < 4) {
+                performanceWarning.style.display = 'block';
+                setTimeout(() => {
+                    performanceWarning.style.display = 'none';
+                }, 5000);
+            }
+
+            // Call the startGame function from main.ts
+            if (window.startGame) {
+                window.startGame();
+            } else {
+                // Fallback: try to import and call
+                import('/assets/main-BtoNveTn.ts').then(() => {
+                    if (window.startGame) {
+                        window.startGame();
+                    } else {
+                        showError('Game initialization failed. Please refresh the page and try again.');
+                    }
+                }).catch(error => {
+                    console.error('Failed to load game:', error);
+                    showError('Failed to load game. Please refresh the page and try again.');
+                });
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                if (document.body.contains(errorDiv)) {
+                    document.body.removeChild(errorDiv);
+                }
+            }, 5000);
+        }
+
+        // Handle global errors
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error);
+            showError('An unexpected error occurred. Please refresh the page.');
+        });
+
+        // Start loading simulation
+        simulateLoading();
+
+        // Prevent context menu on right click
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+
+        // Handle visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                console.log('Game tab is now hidden');
+            } else {
+                console.log('Game tab is now visible');
+            }
+        });
+    </script>
+    
+    <!-- Load the main game script -->
+</body>
+</html>

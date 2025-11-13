@@ -1,0 +1,2 @@
+import{w as p,x as r}from"./index-mAit6G3x.js";class l extends p{constructor(n){var t,s;super();const a=n.glTF,i=((t=a.animations)==null?void 0:t.map(o=>o._babylonAnimationGroup))||[];this.animationGroups=this.registerDataOutput("animationGroups",r,i);const e=((s=a.nodes)==null?void 0:s.map(o=>o._babylonTransformNode))||[];this.nodes=this.registerDataOutput("nodes",r,e)}getClassName(){return"FlowGraphGLTFDataProvider"}}export{l as FlowGraphGLTFDataProvider};
+//# sourceMappingURL=flowGraphGLTFDataProvider-D_2XcfHy.js.map
